@@ -16,6 +16,9 @@ const bs = require('browser-sync');
 const pngquant = require('imagemin-pngquant');
 const mozjpeg = require('imagemin-mozjpeg');
 
+const postcss = require('gulp-postcss');
+const cssdeclsort = require('css-declaration-sorter');
+
 const $ = require('gulp-load-plugins')();
 
 //----------------------------------------------------------------------
@@ -100,12 +103,16 @@ const development = (done) => {
 	// 処理なし
 
 	// sass
-	src(paths.scss.src) // コンパイル
+	const postcssPlugins = [
+		cssdeclsort({ order: 'smacss' })
+	];
+	src(paths.scss.src, { sourcemaps: true }) // コンパイル
 		.pipe($.plumber())
 		.pipe($.sassGlobUseForward())
 		.pipe(dartSass())
+		.pipe(postcss(postcssPlugins))
 		.pipe($.autoprefixer())
-		.pipe(dest(paths.scss.dest));
+		.pipe(dest(paths.scss.dest, { sourcemaps: './sourcemaps' }));
 
 	// vendor
 	// 処理なし
@@ -115,7 +122,7 @@ const development = (done) => {
 
 const production = (done) => {
 	// css
-	src(paths.css.src) // パージ、圧縮、コピー
+	src([paths.css.src,'!src/css/sourcemaps','!src/css/sourcemaps/style.css.map']) // パージ、圧縮、コピー
 		.pipe($.plumber())
 		.pipe(
 			$.purgecss({
