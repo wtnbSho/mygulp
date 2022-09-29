@@ -47,9 +47,9 @@ const paths = {
 		src: `${proj.dev}/**/*.php`,
 		dest: `${proj.pro}/`,
 	},
-	image: {
-		src: `${proj.dev}/image/**`,
-		dest: `${proj.pro}/image`,
+	images: {
+		src: `${proj.dev}/images/**`,
+		dest: `${proj.pro}/images`,
 	},
 	js: {
 		src: `${proj.dev}/js/**/*.js`,
@@ -93,7 +93,7 @@ const development = (done) => {
 	// html
 	// 処理なし
 
-	// image
+	// images
 	// 処理なし
 
 	// js
@@ -119,7 +119,7 @@ const production = (done) => {
 		.pipe($.plumber())
 		.pipe(
 			$.purgecss({
-				content: [paths.html.src, paths.js.src],
+				content: [paths.html.src,paths.php.src, paths.js.src],
 			})
 		)
 		.pipe($.cleanCss())
@@ -140,25 +140,25 @@ const production = (done) => {
 		.pipe($.plumber())
 		.pipe(dest(paths.php.dest));
 
-	// image
-	src(paths.image.src) // 圧縮、コピー
+	// images
+	src(paths.images.src) // 圧縮、コピー
 		.pipe($.plumber())
-		.pipe($.changed(paths.image.dest))
+		.pipe($.changed(paths.images.dest))
 		.pipe(
 			$.imagemin([
 				pngquant({
-					quality: [0.6, 0.7],
+					quality: [0.8, 0.9],
 					speed: 1,
 				}),
-				mozjpeg({ quality: 65 }),
-				$.imagemin.svgo(),
+				mozjpeg({ quality: 85 }),
+				// $.imagemin.svgo(),
 				$.imagemin.optipng(),
 				$.imagemin.gifsicle({
 					optimizationLevel: 3,
 				}),
 			])
 		)
-		.pipe(dest(paths.image.dest));
+		.pipe(dest(paths.images.dest));
 
 	// js
 	src(paths.js.src) // 圧縮、コピー
