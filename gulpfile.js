@@ -33,14 +33,17 @@ const paths = {
 	clean: {
 		src: `${proj.pro}/**`,
 	},
-
 	css: {
 		src: `${proj.dev}/css/**`,
 		dest: `${proj.pro}/css`,
 	},
 	font: {
-		src: `${proj.dev}/font/**`,
-		dest: `${proj.pro}/font`,
+		src: `${proj.dev}/css/fonts/**`,
+		dest: `${proj.pro}/css/fonts`,
+	},
+	gif: {
+		src: `${proj.dev}/css/ajax-loader.gif`,
+		dest: `${proj.pro}/css/`,
 	},
 	html: {
 		src: `${proj.dev}/**/*.html`,
@@ -122,7 +125,7 @@ const development = (done) => {
 
 const production = (done) => {
 	// css
-	src([paths.css.src,'!src/css/sourcemaps','!src/css/sourcemaps/style.css.map']) // パージ、圧縮、コピー
+	src([paths.css.src,'!src/css/sourcemaps/**','!src/css/fonts/**','!src/css/ajax-loader.gif']) // パージ、圧縮、コピー
 		.pipe($.plumber())
 		.pipe(
 			$.purgecss({
@@ -136,6 +139,11 @@ const production = (done) => {
 	src(paths.font.src) // コピー
 		.pipe($.plumber())
 		.pipe(dest(paths.font.dest));
+
+	// gif
+	src(paths.gif.src) // コピー
+		.pipe($.plumber())
+		.pipe(dest(paths.gif.dest));
 
 	// html
 	src(paths.html.src) // コピー
