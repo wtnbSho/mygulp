@@ -165,10 +165,6 @@ const production = (done) => {
 	// sass
 	// 処理なし
 
-	// vendor
-	src(paths.vendor.src) // コピー
-		.pipe($.plumber())
-		.pipe(dest(paths.vendor.dest));
 
 	done();
 };
