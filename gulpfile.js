@@ -16,7 +16,6 @@ const bs = require('browser-sync');
 const pngquant = require('imagemin-pngquant');
 const mozjpeg = require('imagemin-mozjpeg');
 
-const postcss = require('gulp-postcss');
 const cssdeclsort = require('css-declaration-sorter');
 
 const $ = require('gulp-load-plugins')();
@@ -34,15 +33,11 @@ const paths = {
 		src: `${proj.pro}/**`,
 	},
 	css: {
-		src: `${proj.dev}/css/**`,
+		src: `${proj.dev}/css/*.css`,
 		dest: `${proj.pro}/css`,
 	},
-	font: {
-		src: `${proj.dev}/css/fonts/**`,
-		dest: `${proj.pro}/css/fonts`,
-	},
-	gif: {
-		src: `${proj.dev}/css/ajax-loader.gif`,
+	cssOthers: {
+		src: `${proj.dev}/css/**`,
 		dest: `${proj.pro}/css/`,
 	},
 	html: {
@@ -64,10 +59,6 @@ const paths = {
 	scss: {
 		src: `${proj.dev}/scss/**.scss`,
 		dest: `${proj.dev}/css/`,
-	},
-	vendor: {
-		src: `${proj.dev}/vendor/**`,
-		dest: `${proj.pro}/vendor`,
 	},
 
 	watch: {
@@ -93,9 +84,6 @@ const development = (done) => {
 	// css
 	// 処理なし
 
-	// font
-	// 処理なし
-
 	// html
 	// 処理なし
 
@@ -113,37 +101,30 @@ const development = (done) => {
 		.pipe($.plumber())
 		.pipe($.sassGlobUseForward())
 		.pipe(dartSass())
-		.pipe(postcss(postcssPlugins))
+		.pipe($.postcss(postcssPlugins))
 		.pipe($.autoprefixer())
 		.pipe(dest(paths.scss.dest, { sourcemaps: './sourcemaps' }));
-
-	// vendor
-	// 処理なし
 
 	done();
 };
 
 const production = (done) => {
 	// css
-	src([paths.css.src,'!src/css/sourcemaps/**','!src/css/fonts/**','!src/css/ajax-loader.gif']) // パージ、圧縮、コピー
+	src(paths.css.src) // パージ、圧縮、コピー
 		.pipe($.plumber())
 		.pipe(
-			$.purgecss({
-				content: [paths.html.src,paths.php.src, paths.js.src],
-			})
+		$.purgecss({
+			content: [paths.html.src,paths.php.src, paths.js.src],
+		})
 		)
+		.pipe($.groupCssMediaQueries())
 		.pipe($.cleanCss())
 		.pipe(dest(paths.css.dest));
 
-	// font
-	src(paths.font.src) // コピー
+	// cssOthers(ソースマップを除く全て)
+	src([paths.cssOthers.src,'!src/css/sourcemaps/**']) // コピー
 		.pipe($.plumber())
-		.pipe(dest(paths.font.dest));
-
-	// gif
-	src(paths.gif.src) // コピー
-		.pipe($.plumber())
-		.pipe(dest(paths.gif.dest));
+		.pipe(dest(paths.cssOthers.dest));
 
 	// html
 	src(paths.html.src) // コピー
@@ -166,7 +147,7 @@ const production = (done) => {
 					speed: 1,
 				}),
 				mozjpeg({ quality: 85 }),
-				// $.imagemin.svgo(),
+				// $.imagemin.svgo(), // svg
 				$.imagemin.optipng(),
 				$.imagemin.gifsicle({
 					optimizationLevel: 3,
