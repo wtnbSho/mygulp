@@ -165,22 +165,29 @@ const production = (done) => {
 	// sass
 	// 処理なし
 
-	// vendor
-	src(paths.vendor.src) // コピー
-		.pipe($.plumber())
-		.pipe(dest(paths.vendor.dest));
 
 	done();
 };
 
 const bsInit = (done) => {
 	bs.init({
+		// ----------------------------------------- HTML↓
+
 		server: {
-			baseDir: bsConf.base,
-		},
-		startPath: bsConf.start,
-		notify: false,
-		open: 'external',
+				baseDir: bsConf.base,
+			},
+			startPath: bsConf.start,
+			notify: false,
+			open: 'external',
+
+		// ----------------------------------------- HTML↑
+
+		// ========================================= PHP↓
+
+		// proxy: "localhost:80/mygulp/src/",//Apache Portを合わせる&phpが置いてあるディレクトリ指定
+		// index: "index.php"//インデックスファイル名
+
+		// ========================================= PHP↑
 	});
 
 	done();
