@@ -143,10 +143,10 @@ const production = (done) => {
 		.pipe(
 			$.imagemin([
 				pngquant({
-					quality: [0.8, 0.9],
+					quality: [0.7, 0.8],
 					speed: 1,
 				}),
-				mozjpeg({ quality: 85 }),
+				mozjpeg({ quality: 80 }),
 				// $.imagemin.svgo(), // svg
 				$.imagemin.optipng(),
 				$.imagemin.gifsicle({
