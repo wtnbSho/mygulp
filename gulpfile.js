@@ -17,6 +17,8 @@ const pngquant = require('imagemin-pngquant');
 const mozjpeg = require('imagemin-mozjpeg');
 
 const cssdeclsort = require('css-declaration-sorter');
+const crypto = require('crypto');
+const hash = crypto.randomBytes(8).toString('hex');
 
 const $ = require('gulp-load-plugins')();
 
@@ -129,6 +131,7 @@ const production = (done) => {
 	// html
 	src(paths.html.src) // コピー
 		.pipe($.plumber())
+		// .pipe($.replace('/\.rev.(js|css)/g', '.rev=' + hash + '.$1'))
 		.pipe(dest(paths.html.dest));
 
 	// php
