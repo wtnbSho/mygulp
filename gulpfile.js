@@ -39,8 +39,12 @@ const paths = {
 		dest: `${proj.pro}/css`,
 	},
 	cssOthers: {
-		src: `${proj.dev}/css/**`,
+		src: [`${proj.dev}/css/**`, `!${proj.dev}/css/sourcemaps/**`],
 		dest: `${proj.pro}/css/`,
+	},
+	pug: {
+		src: [`${proj.dev}/pug/**/*.pug`, `!${proj.dev}/pug/**/_*.pug`],
+		dest: `${proj.dev}/`,
 	},
 	html: {
 		src: `${proj.dev}/**/*.html`,
@@ -64,7 +68,7 @@ const paths = {
 	},
 
 	watch: {
-		src: [`${proj.dev}/**`, `!${proj.dev}/css/**`],
+		src: [`${proj.dev}/**`, `!${proj.dev}/css/**`, `!${proj.dev}/**/*.html`],
 	},
 };
 
@@ -88,6 +92,14 @@ const development = (done) => {
 
 	// html
 	// 処理なし
+
+	// Pug
+	src(paths.pug.src) // Pugコンパイル
+	.pipe($.plumber())
+	.pipe($.pug({
+		pretty: true,
+	}))
+	.pipe(dest('./src/'));
 
 	// images
 	// 処理なし
@@ -124,7 +136,7 @@ const production = (done) => {
 		.pipe(dest(paths.css.dest));
 
 	// cssOthers(ソースマップを除く全て)
-	src([paths.cssOthers.src,'!src/css/sourcemaps/**']) // コピー
+	src(paths.cssOthers.src) // コピー
 		.pipe($.plumber())
 		.pipe(dest(paths.cssOthers.dest));
 
